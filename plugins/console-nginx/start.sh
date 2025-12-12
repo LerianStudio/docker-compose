@@ -16,13 +16,22 @@ log() {
   esac
 }
 
+# Docker Compose helper that supports both v1 (docker-compose) and v2 (docker compose)
+compose() {
+  if command -v docker-compose >/dev/null 2>&1; then
+    docker-compose "$@"
+  else
+    docker compose "$@"
+  fi
+}
+
 # Absolute path to the script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ADD_PLUGIN_SCRIPT="$SCRIPT_DIR/scripts/add-plugin.sh"
 
 # 1. Start the NGINX container so the add-plugin script can work
 log "info" "Starting NGINX container..."
-(cd "$SCRIPT_DIR" && docker-compose up -d nginx)
+(cd "$SCRIPT_DIR" && compose up -d nginx)
 
 # 2. Loop to process all plugins passed as arguments
 if [ "$#" -eq 0 ]; then

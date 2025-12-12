@@ -36,9 +36,8 @@ The automation is orchestrated by the following steps:
 
     *To add multiple plugins at once:*
     ```bash
-    ./start.sh plugin-crm-ui 8082 plugin-fees-ui 8084 plugin-smart-templates-ui 8083
+    ./start.sh plugin-crm-ui 8082 plugin-fees-ui 8084 reporter-ui 8083
     ```
-
 4.  **Automated Configuration**: The `start.sh` script will then:
     -   Ensure the NGINX container is running.
     -   Generate a specific `.conf` file for each plugin.
@@ -47,3 +46,13 @@ The automation is orchestrated by the following steps:
     -   Register each plugin with the `midaz-console` via an API call.
 
 5.  **Access the Console**: Once the script completes, the new plugins will be available in the main console UI. You can access the entire application suite at **`http://localhost`**.
+
+## Console environment variables
+
+To run the console behind this NGINX reverse proxy, set the console URLs to the NGINX service:
+
+- **NEXTAUTH_URL** → http://localhost
+- **NEXT_PUBLIC_MIDAZ_CONSOLE_BASE_URL** → http://localhost
+- **MIDAZ_CONSOLE_BASE_PATH** → http://localhost
+
+If you expose NGINX with a different DNS name or base path, use that instead (for example, `http://midaz-nginx` or a custom path).

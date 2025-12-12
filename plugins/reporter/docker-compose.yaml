@@ -1,0 +1,205 @@
+services:
+  reporter-mongodb:
+    container_name: reporter-mongodb
+    image: mongo:latest
+    env_file:
+      - infra.env
+    restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    user: root
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    command: mongod --port ${MONGO_PORT}
+    volumes:
+      - reporter-mongodb-data:/data/db
+    networks:
+      - reporter-infra-network
+
+  reporter-rabbitmq:
+    image: rabbitmq:4.0-management-alpine
+    container_name: reporter-rabbitmq
+    restart: always
+    env_file:
+      - infra.env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - ${RABBITMQ_PORT_HOST}:${RABBITMQ_PORT_HOST}
+      - ${RABBITMQ_PORT_AMQP}:${RABBITMQ_PORT_AMQP}
+    volumes:
+      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - reporter-infra-network
+
+  reporter-seaweedfs-master:
+    image: chrislusf/seaweedfs:3.97
+    container_name: reporter-seaweedfs-master
+    ports:
+      - "${SEAWEEDFS_MASTER_PORT:-9333}:9333"
+      - "${SEAWEEDFS_MASTER_UI_PORT:-9334}:9334"
+    command: "master -ip=reporter-seaweedfs-master -port=9333 -mdir=/data"
+    volumes:
+      - reporter-seaweedfs-master-data:/data
+    networks:
+      - reporter-infra-network
+    restart: always
+
+  reporter-seaweedfs-volume:
+    image: chrislusf/seaweedfs:3.97
+    container_name: reporter-seaweedfs-volume
+    ports:
+      - "${SEAWEEDFS_VOLUME_PORT:-9080}:9080"
+    command: "volume -ip=reporter-seaweedfs-volume -port=9080 -mserver=reporter-seaweedfs-master:9333 -dir=/data -max=0"
+    volumes:
+      - reporter-seaweedfs-volume-data:/data
+    networks:
+      - reporter-infra-network
+    depends_on:
+      - reporter-seaweedfs-master
+    restart: always
+
+  reporter-seaweedfs-filer:
+    image: chrislusf/seaweedfs:3.97
+    container_name: reporter-seaweedfs-filer
+    ports:
+      - "${SEAWEEDFS_FILER_PORT:-8888}:8888"
+      - "${SEAWEEDFS_FILER_S3_PORT:-8333}:8333"
+    command: "filer -ip=reporter-seaweedfs-filer -port=8888 -master=reporter-seaweedfs-master:9333"
+    volumes:
+      - reporter-seaweedfs-filer-data:/data
+    networks:
+      - reporter-infra-network
+    depends_on:
+      - reporter-seaweedfs-master
+      - reporter-seaweedfs-volume
+    restart: always
+
+  reporter-keda:
+    image: ghcr.io/kedacore/keda:2.16.0
+    container_name: reporter-keda
+    env_file:
+      - infra.env
+    environment:
+      - KEDA_OPERATOR_LOG_LEVEL=info
+      - KEDA_OPERATOR_RABBITMQ_HOST=reporter-rabbitmq
+      - KEDA_OPERATOR_RABBITMQ_PORT=${RABBITMQ_PORT_AMQP}
+      - KEDA_OPERATOR_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - KEDA_OPERATOR_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+      - KEDA_OPERATOR_RABBITMQ_QUEUE=reporter-queue
+    ports:
+      - "8000:8000"
+    depends_on:
+      - reporter-rabbitmq
+    networks:
+      - reporter-infra-network
+
+  reporter-valkey:
+    container_name: reporter-valkey
+    image: valkey/valkey:latest
+    restart: always
+    env_file:
+      - infra.env
+    environment:
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}",  "--port", "${REDIS_PORT}" ]
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - reporter-redis-data:/data
+    networks:
+      - reporter-infra-network
+
+  reporter-manager:
+    container_name: reporter-manager
+    restart: always
+    image: ghcr.io/lerianstudio/reporter-manager:4.0.0
+    env_file:
+      - manager.env
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+      - .:/usr/src/manager
+    networks:
+      - reporter-infra-network
+      - infra-network
+      - plugin-fees-network
+      - reporter-manager-network
+      - plugin-auth-network
+      - plugin-crm-network
+
+  reporter-worker:
+    container_name: reporter-worker
+    restart: always
+    image: ghcr.io/lerianstudio/reporter-worker:4.0.0
+    env_file:
+      - worker.env
+    volumes:
+      - .:/usr/src/worker
+    networks:
+      - reporter-infra-network
+      - plugin-fees-network
+      - plugin-crm-network
+
+  reporter-ui:
+    container_name: reporter-ui
+    image: ghcr.io/lerianstudio/reporter-frontend:4.0.0
+    restart: always
+    ports:
+      - 8083:8083
+    env_file:
+      - ui.env
+    healthcheck:
+      test:
+        ['CMD', 'curl', '-f', 'http://localhost:8083/api/admin/health/ready']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - console-network
+      - infra-network
+      - proxy-network
+
+volumes:
+  reporter-mongodb-data:
+  reporter-seaweedfs-master-data:
+  reporter-seaweedfs-volume-data:
+  reporter-seaweedfs-filer-data:
+  reporter-redis-data:
+
+networks:
+  reporter-manager-network:
+    name: reporter-manager-network
+    driver: bridge
+  reporter-infra-network:
+    name: reporter-infra-network
+    driver: bridge
+  console-network:
+    name: console-network
+    driver: bridge
+  plugin-fees-network:
+    name: plugin-fees-network
+    driver: bridge
+  plugin-crm-network:
+    name: plugin-crm-network
+    driver: bridge
+  plugin-auth-network:
+    name: plugin-auth-network
+    driver: bridge
+  infra-network:
+    name: infra-network
+    driver: bridge
+  proxy-network:
+    name: proxy-network
+    external: true
