@@ -1,5 +1,5 @@
-x-auth-redis-common:
-  &auth-redis-common
+x-auth-valkey-common:
+  &auth-valkey-common
   image: valkey/valkey:8.0.2
   restart: always
   env_file:
@@ -25,12 +25,29 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     volumes:
-      - ./init/casdoor-migrations/migrations/01_init.up.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - plugin-postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${DB_PORT}" ]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  plugin-auth-casdoor-migrations:
+    container_name: plugin-auth-casdoor-migrations
+    image: ghcr.io/lerianstudio/casdoor-migrations:latest
+    env_file:
+      - auth.env
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASSWORD}
+      DB_HOST: plugin-auth-casdoor-db
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      plugin-auth-casdoor-db:
+        condition: service_healthy
+    networks:
+      - plugin-auth-network
 
   plugin-auth-casdoor-backend:
     container_name: plugin-auth-casdoor-backend
@@ -40,17 +57,17 @@ services:
       - auth.env
     ports:
       - ${AUTHORIZER_PORT}:${AUTHORIZER_PORT}
-    volumes:
-      - ./init/casdoor/init_data.json:/init_data.json
     depends_on:
       plugin-auth-casdoor-db:
         condition: service_healthy
+      plugin-auth-casdoor-migrations:
+        condition: service_completed_successfully
     networks:
       - plugin-auth-network
 
-  plugin-auth-redis:
-    <<: *auth-redis-common
-    container_name: plugin-auth-redis
+  plugin-auth-valkey:
+    <<: *auth-valkey-common
+    container_name: plugin-auth-valkey
     environment:
       - REDIS_USER=${REDIS_USER}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
@@ -58,7 +75,7 @@ services:
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     volumes:
-      - plugin-redis-data:/data
+      - plugin-valkey-data:/data
 
   plugin-auth:
     container_name: plugin-auth
@@ -72,7 +89,7 @@ services:
       - .:/usr/src/app
     depends_on:
       - plugin-auth-casdoor-backend
-      - plugin-auth-redis
+      - plugin-auth-valkey
     networks:
       - plugin-auth-network
       - infra-network
@@ -108,4 +125,4 @@ networks:
 volumes:
   plugin-postgres-data:
   plugin-grafana-data:
-  plugin-redis-data:
+  plugin-valkey-data:
