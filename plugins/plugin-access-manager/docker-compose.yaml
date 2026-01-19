@@ -1,5 +1,5 @@
-x-auth-redis-common:
-  &auth-redis-common
+x-auth-valkey-common:
+  &auth-valkey-common
   image: valkey/valkey:8.0.2
   restart: always
   env_file:
@@ -10,7 +10,7 @@ x-auth-redis-common:
 services:
   plugin-auth-casdoor-db:
     container_name: plugin-auth-casdoor-db
-    image: postgres:latest
+    image: postgres:17
     restart: always
     env_file:
       - auth.env
@@ -25,12 +25,30 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     volumes:
-      - ./init/casdoor-migrations/migrations/01_init.up.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - plugin-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${DB_PORT}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${DB_PORT}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  plugin-auth-casdoor-migrations:
+    container_name: plugin-auth-casdoor-migrations
+    image: ghcr.io/lerianstudio/casdoor-migrations:latest
+    env_file:
+      - auth.env
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASSWORD}
+      DB_HOST: plugin-auth-casdoor-db
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      plugin-auth-casdoor-db:
+        condition: service_healthy
+    networks:
+      - plugin-auth-network
+    restart: "no"
 
   plugin-auth-casdoor-backend:
     container_name: plugin-auth-casdoor-backend
@@ -40,25 +58,50 @@ services:
       - auth.env
     ports:
       - ${AUTHORIZER_PORT}:${AUTHORIZER_PORT}
-    volumes:
-      - ./init/casdoor/init_data.json:/init_data.json
     depends_on:
       plugin-auth-casdoor-db:
         condition: service_healthy
+      plugin-auth-casdoor-migrations:
+        condition: service_completed_successfully
     networks:
       - plugin-auth-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:${AUTHORIZER_PORT}/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
-  plugin-auth-redis:
-    <<: *auth-redis-common
-    container_name: plugin-auth-redis
+  plugin-auth-casdoor-user-init:
+    container_name: plugin-auth-casdoor-user-init
+    image: ghcr.io/lerianstudio/casdoor-user-init:latest
+    env_file:
+      - auth.env
+    environment:
+      DB_HOST: plugin-auth-casdoor-db
+      DB_PASS: ${DB_PASSWORD}
+      CASDOOR_URL: http://plugin-auth-casdoor-backend:${AUTHORIZER_PORT}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_DISPLAY_NAME: ${ADMIN_DISPLAY_NAME}
+    depends_on:
+      plugin-auth-casdoor-backend:
+        condition: service_healthy
+    networks:
+      - plugin-auth-network
+    restart: "no"
+
+  plugin-auth-valkey:
+    <<: *auth-valkey-common
+    container_name: plugin-auth-valkey
     environment:
       - REDIS_USER=${REDIS_USER}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}",  "--port", "${REDIS_PORT}"]
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--port", "${REDIS_PORT}"]
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     volumes:
-      - plugin-redis-data:/data
+      - plugin-valkey-data:/data
 
   plugin-auth:
     container_name: plugin-auth
@@ -67,12 +110,12 @@ services:
     env_file:
       - auth.env
     ports:
-       - ${SERVER_PORT}:${SERVER_PORT}
-    volumes:
-      - .:/usr/src/app
+      - ${SERVER_PORT}:${SERVER_PORT}
     depends_on:
-      - plugin-auth-casdoor-backend
-      - plugin-auth-redis
+      plugin-auth-casdoor-backend:
+        condition: service_healthy
+      plugin-auth-valkey:
+        condition: service_started
     networks:
       - plugin-auth-network
       - infra-network
@@ -85,10 +128,9 @@ services:
       - identity.env
     ports:
       - ${IDENTITY_PORT}:${IDENTITY_PORT}
-    volumes:
-      - .:/usr/src/app
     depends_on:
-      - plugin-auth-casdoor-backend
+      plugin-auth-casdoor-backend:
+        condition: service_healthy
     networks:
       - plugin-identity-network
       - plugin-auth-network
@@ -100,7 +142,7 @@ networks:
     driver: bridge
   plugin-auth-network:
     name: plugin-auth-network
-    external: false
+    driver: bridge
   infra-network:
     name: infra-network
     driver: bridge
@@ -108,4 +150,4 @@ networks:
 volumes:
   plugin-postgres-data:
   plugin-grafana-data:
-  plugin-redis-data:
+  plugin-valkey-data:
