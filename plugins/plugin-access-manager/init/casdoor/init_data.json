@@ -1189,15 +1189,58 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-m2m-permission",
-      "displayName": "Plugin Smart Templates M2M Permission",
+      "name": "reporter-m2m-permission",
+      "displayName": "Reporter M2M Permission",
       "isEnabled": true,
       "adapter" : "lerian-m2m-adapter",
       "model": "api-model",
-      "roles": ["lerian/plugin-smart-templates-editor-role"],
+      "roles": ["lerian/reporter-editor-role"],
       "users": [],
       "resourceType": "Application",
       "resources": [
+      ],
+      "actions": [
+        "get",
+        "post",
+        "patch",
+        "delete"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-m2m-permission",
+      "displayName": "Plugin PIX JD M2M Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-m2m-adapter",
+      "model": "api-model",
+      "roles": ["lerian/plugin-br-pix-direct-jd-editor-role"],
+      "users": [],
+      "resourceType": "Application",
+      "resources": [
+        "entries",
+        "entries-details",
+        "claims",
+        "transactions",
+        "limits",
+        "return-reasons",
+        "static",
+        "dynamic",
+        "decode",
+        "qrcodes",
+        "cash-ins",
+        "reversals",
+        "validates",
+        "validates-async",
+        "webhooks",
+        "participants",
+        "banks",
+        "health"
       ],
       "actions": [
         "get",
@@ -1383,13 +1426,13 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-viewer-permission",
-      "displayName": "Plugin Smart Template Viewer Permission",
+      "name": "reporter-viewer-permission",
+      "displayName": "Reporter Viewer Permission",
       "isEnabled": true,
       "adapter": "lerian-user-adapter",
       "model": "api-model",
       "roles": [
-        "lerian/plugin-smart-templates-viewer-role"
+        "lerian/reporter-viewer-role"
       ],
       "users": [],
       "resourceType": "Custom",
@@ -1410,13 +1453,13 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-contributor-permission",
-      "displayName": "Plugin Smart Templates Contributor Permission",
+      "name": "reporter-contributor-permission",
+      "displayName": "Reporter Contributor Permission",
       "isEnabled": true,
       "adapter" : "lerian-user-adapter",
       "model": "api-model",
       "roles": [
-        "lerian/plugin-smart-templates-contributor-role"
+        "lerian/reporter-contributor-role"
       ],
       "users": [],
       "resourceType": "Custom",
@@ -1439,13 +1482,13 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-editor-permission",
-      "displayName": "Plugin Smart Templates Editor Permission",
+      "name": "reporter-editor-permission",
+      "displayName": "Reporter Editor Permission",
       "isEnabled": true,
       "adapter" : "lerian-user-adapter",
       "model": "api-model",
       "roles": [
-        "lerian/plugin-smart-templates-editor-role"
+        "lerian/reporter-editor-role"
       ],
       "users": [],
       "resourceType": "Custom",
@@ -1459,6 +1502,257 @@
         "post",
         "patch",
         "delete"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-editor-permission",
+      "displayName": "Plugin PIX JD Editor Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-user-adapter",
+      "model": "api-model",
+      "roles": [
+        "lerian/plugin-br-pix-direct-jd-editor-role"
+      ],
+      "users": [],
+      "resourceType": "Custom",
+      "resources": [
+        "entries",
+        "entries-details",
+        "claims",
+        "transactions",
+        "limits",
+        "return-reasons",
+        "static",
+        "dynamic",
+        "decode",
+        "qrcodes",
+        "cash-ins",
+        "reversals",
+        "validates",
+        "validates-async",
+        "webhooks",
+        "participants",
+        "banks",
+        "health"
+      ],
+      "actions": [
+        "get",
+        "post",
+        "patch",
+        "delete"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-contributor-permission",
+      "displayName": "Plugin PIX JD Contributor Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-user-adapter",
+      "model": "api-model",
+      "roles": [
+        "lerian/plugin-br-pix-direct-jd-contributor-role"
+      ],
+      "users": [],
+      "resourceType": "Custom",
+      "resources": [
+        "entries",
+        "entries-details",
+        "claims",
+        "transactions",
+        "limits",
+        "return-reasons",
+        "static",
+        "dynamic",
+        "decode",
+        "qrcodes",
+        "cash-ins",
+        "reversals",
+        "validates",
+        "validates-async",
+        "webhooks",
+        "participants",
+        "banks",
+        "health"
+      ],
+      "actions": [
+        "get",
+        "post",
+        "patch"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-viewer-permission",
+      "displayName": "Plugin PIX JD Viewer Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-user-adapter",
+      "model": "api-model",
+      "roles": [
+        "lerian/plugin-br-pix-direct-jd-viewer-role"
+      ],
+      "users": [],
+      "resourceType": "Custom",
+      "resources": [
+        "entries",
+        "entries-details",
+        "claims",
+        "transactions",
+        "limits",
+        "return-reasons",
+        "static",
+        "dynamic",
+        "decode",
+        "qrcodes",
+        "cash-ins",
+        "reversals",
+        "validates",
+        "validates-async",
+        "webhooks",
+        "participants",
+        "banks",
+        "health"
+      ],
+      "actions": [
+        "get"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-indirect-btg-editor-permission",
+      "displayName": "Plugin PIX BTG Editor Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-user-adapter",
+      "model": "api-model",
+      "roles": [
+        "lerian/plugin-br-pix-indirect-btg-editor-role"
+      ],
+      "users": [],
+      "resourceType": "Custom",
+      "resources": [
+        "entries",
+        "keys",
+        "claims",
+        "collections",
+        "brcode",
+        "health",
+        "refund-requests",
+        "fraud-markers",
+        "statistics",
+        "transfers",
+        "refunds",
+        "vsync",
+        "webhooks",
+        "infraction-reports"
+      ],
+      "actions": [
+        "get",
+        "post",
+        "put",
+        "patch",
+        "delete"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-indirect-btg-contributor-permission",
+      "displayName": "Plugin PIX BTG Contributor Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-user-adapter",
+      "model": "api-model",
+      "roles": [
+        "lerian/plugin-br-pix-indirect-btg-contributor-role"
+      ],
+      "users": [],
+      "resourceType": "Custom",
+      "resources": [
+        "entries",
+        "keys",
+        "claims",
+        "collections",
+        "brcode",
+        "health",
+        "refund-requests",
+        "fraud-markers",
+        "statistics",
+        "transfers",
+        "refunds",
+        "vsync",
+        "webhooks",
+        "infraction-reports"
+      ],
+      "actions": [
+        "get",
+        "post",
+        "put",
+        "patch"
+      ],
+      "domains": [],
+      "effect": "Allow",
+      "submitter": "admin",
+      "approver": "admin",
+      "approveTime": "2024-01-01T22:51:35+08:00",
+      "state": "Approved"
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-indirect-btg-viewer-permission",
+      "displayName": "Plugin PIX BTG Viewer Permission",
+      "isEnabled": true,
+      "adapter" : "lerian-user-adapter",
+      "model": "api-model",
+      "roles": [
+        "lerian/plugin-br-pix-indirect-btg-viewer-role"
+      ],
+      "users": [],
+      "resourceType": "Custom",
+      "resources": [
+        "entries",
+        "keys",
+        "claims",
+        "collections",
+        "brcode",
+        "health",
+        "refund-requests",
+        "fraud-markers",
+        "statistics",
+        "transfers",
+        "refunds",
+        "vsync",
+        "infraction-reports"
+      ],
+      "actions": [
+        "get"
       ],
       "domains": [],
       "effect": "Allow",
@@ -1641,37 +1935,37 @@
       ]
     },
     {
-      "displayName": "Plugin Smart Templates Viewer Role",
+      "displayName": "Reporter Viewer Role",
       "isEnabled": true,
-      "name": "plugin-smart-templates-viewer-role",
+      "name": "reporter-viewer-role",
       "owner": "lerian",
       "roles": [],
       "users": [],
       "groups": [
-        "lerian/plugin-smart-templates-viewer-group"
+        "lerian/reporter-viewer-group"
       ]
     },
     {
-      "displayName": "Plugin Smart Templates Contributor Role",
+      "displayName": "Reporter Contributor Role",
       "isEnabled": true,
-      "name": "plugin-smart-templates-contributor-role",
+      "name": "reporter-contributor-role",
       "owner": "lerian",
       "roles": [],
       "users": [],
       "groups": [
-        "lerian/plugin-smart-templates-contributor-group"
+        "lerian/reporter-contributor-group"
       ]
     },
     {
-      "displayName": "Plugin Smart Templates Editor Role",
+      "displayName": "Reporter Editor Role",
       "isEnabled": true,
-      "name": "plugin-smart-templates-editor-role",
+      "name": "reporter-editor-role",
       "owner": "lerian",
       "roles": [],
       "users": [],
       "groups": [
         "lerian/admin-group",
-        "lerian/plugin-smart-templates-editor-group"
+        "lerian/reporter-editor-group"
       ]
     },
     {
@@ -1706,6 +2000,74 @@
       "groups": [
         "lerian/admin-group",
         "lerian/routing-editor-group"
+      ]
+    },
+    {
+      "displayName": "Plugin PIX JD Editor Role",
+      "isEnabled": true,
+      "name": "plugin-br-pix-direct-jd-editor-role",
+      "owner": "lerian",
+      "roles": [],
+      "users": [],
+      "groups": [
+        "lerian/admin-group",
+        "lerian/plugin-br-pix-direct-jd-editor-group"
+      ]
+    },
+    {
+      "displayName": "Plugin PIX JD Contributor Role",
+      "isEnabled": true,
+      "name": "plugin-br-pix-direct-jd-contributor-role",
+      "owner": "lerian",
+      "roles": [],
+      "users": [],
+      "groups": [
+        "lerian/plugin-br-pix-direct-jd-contributor-group"
+      ]
+    },
+    {
+      "displayName": "Plugin PIX JD Viewer Role",
+      "isEnabled": true,
+      "name": "plugin-br-pix-direct-jd-viewer-role",
+      "owner": "lerian",
+      "roles": [],
+      "users": [],
+      "groups": [
+        "lerian/plugin-br-pix-direct-jd-viewer-group"
+      ]
+    },
+    {
+      "displayName": "Plugin PIX Indirect BTG Editor Role",
+      "isEnabled": true,
+      "name": "plugin-br-pix-indirect-btg-editor-role",
+      "owner": "lerian",
+      "roles": [],
+      "users": [],
+      "groups": [
+        "lerian/admin-group",
+        "lerian/plugin-br-pix-indirect-btg-editor-group"
+      ]
+    },
+    {
+      "displayName": "Plugin PIX Indirect BTG Contributor Role",
+      "isEnabled": true,
+      "name": "plugin-br-pix-indirect-btg-contributor-role",
+      "owner": "lerian",
+      "roles": [],
+      "users": [],
+      "groups": [
+        "lerian/plugin-br-pix-indirect-btg-contributor-group"
+      ]
+    },
+    {
+      "displayName": "Plugin PIX Indirect BTG Viewer Role",
+      "isEnabled": true,
+      "name": "plugin-br-pix-indirect-btg-viewer-role",
+      "owner": "lerian",
+      "roles": [],
+      "users": [],
+      "groups": [
+        "lerian/plugin-br-pix-indirect-btg-viewer-group"
       ]
     }
   ],
@@ -1812,8 +2174,8 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-editor-group",
-      "displayName": "Plugin Smart Templates Editor",
+      "name": "reporter-editor-group",
+      "displayName": "Reporter Editor",
       "manager": "",
       "contactEmail": "",
       "type": "",
@@ -1826,8 +2188,8 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-contributor-group",
-      "displayName": "Plugin Smart Templates Contributor",
+      "name": "reporter-contributor-group",
+      "displayName": "Reporter Contributor",
       "manager": "",
       "contactEmail": "",
       "type": "",
@@ -1840,8 +2202,8 @@
     },
     {
       "owner": "lerian",
-      "name": "plugin-smart-templates-viewer-group",
-      "displayName": "Plugin Smart Templates Viewer",
+      "name": "reporter-viewer-group",
+      "displayName": "Reporter Viewer",
       "manager": "",
       "contactEmail": "",
       "type": "",
@@ -1926,6 +2288,90 @@
       "owner": "lerian",
       "name": "routing-viewer-group",
       "displayName": "Routing Viewer",
+      "manager": "",
+      "contactEmail": "",
+      "type": "",
+      "parent_id": "",
+      "isTopGroup": false,
+      "title": "",
+      "key": "",
+      "children": [],
+      "isEnabled": true
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-editor-group",
+      "displayName": "Plugin PIX JD Editor",
+      "manager": "",
+      "contactEmail": "",
+      "type": "",
+      "parent_id": "",
+      "isTopGroup": false,
+      "title": "",
+      "key": "",
+      "children": [],
+      "isEnabled": true
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-contributor-group",
+      "displayName": "Plugin PIX JD Contributor",
+      "manager": "",
+      "contactEmail": "",
+      "type": "",
+      "parent_id": "",
+      "isTopGroup": false,
+      "title": "",
+      "key": "",
+      "children": [],
+      "isEnabled": true
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-direct-jd-viewer-group",
+      "displayName": "Plugin PIX JD Viewer",
+      "manager": "",
+      "contactEmail": "",
+      "type": "",
+      "parent_id": "",
+      "isTopGroup": false,
+      "title": "",
+      "key": "",
+      "children": [],
+      "isEnabled": true
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-indirect-btg-editor-group",
+      "displayName": "Plugin PIX Indirect BTG Editor",
+      "manager": "",
+      "contactEmail": "",
+      "type": "",
+      "parent_id": "",
+      "isTopGroup": false,
+      "title": "",
+      "key": "",
+      "children": [],
+      "isEnabled": true
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-indirect-btg-contributor-group",
+      "displayName": "Plugin PIX Indirect BTG Contributor",
+      "manager": "",
+      "contactEmail": "",
+      "type": "",
+      "parent_id": "",
+      "isTopGroup": false,
+      "title": "",
+      "key": "",
+      "children": [],
+      "isEnabled": true
+    },
+    {
+      "owner": "lerian",
+      "name": "plugin-br-pix-indirect-btg-viewer-group",
+      "displayName": "Plugin PIX Indirect BTG Viewer",
       "manager": "",
       "contactEmail": "",
       "type": "",

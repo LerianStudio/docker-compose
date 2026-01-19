@@ -16,6 +16,15 @@ log() {
   esac
 }
 
+# Docker Compose helper that supports both v1 (docker-compose) and v2 (docker compose)
+compose() {
+  if command -v docker-compose >/dev/null 2>&1; then
+    docker-compose "$@"
+  else
+    docker compose "$@"
+  fi
+}
+
 PLUGIN_NAME=$1
 PLUGIN_PORT=$2
 
@@ -56,18 +65,25 @@ EOF
 
 log info "Configuration file created at $PLUGIN_CONF_PATH"
 
-# Check if Nginx is running in Docker
-if docker ps | grep -q nginx; then
-  log info "Reloading Nginx configuration in Docker..."
-  if [ -f "$BASE_DIR/docker-compose.yml" ]; then
-    (cd "$BASE_DIR" && docker-compose exec -T nginx nginx -s reload) || \
-      docker exec $(docker ps -q -f name=nginx) nginx -s reload
+# Check if NGINX is running in Docker (prefer known container name)
+NGINX_CONTAINER=midaz-nginx
+NGINX_ID=$(docker ps -q -f name="^${NGINX_CONTAINER}$")
+if [[ -n "$NGINX_ID" ]]; then
+  log info "Reloading NGINX configuration (container: $NGINX_CONTAINER)..."
+  if docker exec "$NGINX_CONTAINER" nginx -s reload; then
+    log info "NGINX reloaded successfully"
   else
-    docker exec $(docker ps -q -f name=nginx) nginx -s reload
+    log warn "docker exec failed; trying compose exec ..."
+    (cd "$BASE_DIR" && compose exec -T nginx nginx -s reload) && log info "NGINX reloaded via compose"
   fi
-  log info "Nginx reloaded successfully"
 else
-  log warn "Nginx container not found. Start the container with 'docker-compose up -d nginx'"
+  # Fallback: try compose exec if service is up without the expected name
+  if (cd "$BASE_DIR" && compose ps --services | grep -q '^nginx$'); then
+    log info "Reloading NGINX via compose exec ..."
+    (cd "$BASE_DIR" && compose exec -T nginx nginx -s reload) && log info "NGINX reloaded"
+  else
+    log warn "NGINX container not found. Start it with 'docker compose up -d nginx'"
+  fi
 fi
 
 

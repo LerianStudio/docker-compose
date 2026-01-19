@@ -25,7 +25,7 @@ See [Plugin CRM Documentation](plugins/plugin-crm/README.md)
 
 See [Plugin Fees Documentation](plugins/plugin-fees/README.md)
 
-### Plugin Smart Templates
+### Reporter
 
-See [Plugin Smart Templates Documentation](plugins/plugin-smart-templates/README.md)
+See [Reporter Documentation](plugins/reporter/README.md)
 

@@ -25,6 +25,6 @@ networks:
   plugin-fees-network:
     name: plugin-fees-network
     driver: bridge
-  plugin-smart-templates-network:
-    name: plugin-smart-templates-network
+  reporter-network:
+    name: reporter-network
     driver: bridge
