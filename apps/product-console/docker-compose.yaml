@@ -1,0 +1,36 @@
+name: product-console
+
+services:
+  console:
+    container_name: console
+    restart: always
+    image: ghcr.io/lerianstudio/product-console:latest
+    ports:
+      - '8081:8081'
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        ['CMD', 'curl', '-f', 'http://localhost:8081/api/admin/health/ready']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - plugin-auth-network
+      - infra-network
+      - onboarding-network
+      - transaction-network
+
+networks:
+  plugin-auth-network:
+    name: plugin-auth-network
+    driver: bridge
+  infra-network:
+    name: infra-network
+    driver: bridge
+  onboarding-network:
+    name: onboarding-network
+    driver: bridge
+  transaction-network:
+    name: transaction-network
+    driver: bridge
