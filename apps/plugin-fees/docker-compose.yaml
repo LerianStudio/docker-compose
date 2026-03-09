@@ -52,6 +52,7 @@ networks:
   onboarding-network:
     name: onboarding-network
     driver: bridge
+  # When integrating with a full Midaz infrastructure, set this network to external: true
   infra-network:
     name: infra-network
     driver: bridge

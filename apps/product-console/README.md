@@ -9,7 +9,7 @@ git clone https://github.com/LerianStudio/plugins-docker-compose.git
 
 2. **Go to the product directory:**
 ```bash
-cd plugins/product-console
+cd apps/product-console
 ```
 
 3. **Run the Docker Compose File**

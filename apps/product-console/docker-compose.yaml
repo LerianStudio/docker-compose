@@ -1,3 +1,5 @@
+name: product-console
+
 services:
   console:
     container_name: console
