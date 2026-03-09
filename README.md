@@ -11,15 +11,15 @@ See [Lerian Documentation](https://docs.lerian.studio/)
 
 ### Product Console
 
-See [Product Console Documentation](plugins/product-console/README.md)
+See [Product Console Documentation](apps/product-console/README.md)
 
 ## Plugins
 
 ### Plugin Access Manager
 
-See [Plugin Access Manager Documentation](plugins/plugin-access-manager/README.md)
+See [Plugin Access Manager Documentation](apps/plugin-access-manager/README.md)
 
 ### Plugin Fees
 
-See [Plugin Fees Documentation](plugins/plugin-fees/README.md)
+See [Plugin Fees Documentation](apps/plugin-fees/README.md)
 
