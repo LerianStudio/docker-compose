@@ -1,0 +1,57 @@
+x-plugin-fees-mongodb-common:
+  &plugin-fees-mongodb-common
+  image: mongo:8
+  restart: always
+  healthcheck:
+    test: echo 'db.runCommand("ping").ok'
+    interval: 10s
+    timeout: 5s
+    retries: 5
+  networks:
+    - plugin-fees-network
+
+services:
+  plugin-fees:
+    container_name: plugin-fees
+    restart: always
+    image: ghcr.io/lerianstudio/plugin-fees:latest
+    env_file:
+      - .env
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    depends_on:
+      - plugin-fees-mongodb
+    networks:
+      - plugin-fees-network
+      - plugin-auth-network
+      - onboarding-network
+      - infra-network
+
+  plugin-fees-mongodb:
+    <<: *plugin-fees-mongodb-common
+    container_name: plugin-fees-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    command: mongod --port ${MONGO_PORT}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+
+networks:
+  plugin-fees-network:
+    name: plugin-fees-network
+    driver: bridge
+  plugin-auth-network:
+    name: plugin-auth-network
+    driver: bridge
+  onboarding-network:
+    name: onboarding-network
+    driver: bridge
+  infra-network:
+    name: infra-network
+    driver: bridge

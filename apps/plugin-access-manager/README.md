@@ -9,7 +9,7 @@ git clone https://github.com/LerianStudio/plugins-docker-compose.git
 
 2. **Go to the plugin directory:**
 ```bash
-cd plugins/plugin-access-manager
+cd apps/plugin-access-manager
 ```
 3. **Run the Docker Compose File**
 ```bash
